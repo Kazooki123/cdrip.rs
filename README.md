@@ -3,7 +3,7 @@
 A fast, accurate CD ripper written in pure Rust. **No GNU dependencies**, no `cdparanoia` system library required.
 
 - **Demo**: Ripping a **Nirvana In Utero 2CD Deluxe Edition**
-![demo](demo.png)
+![demo](https://codeberg.org/Kazooki123/cdrip.rs/raw/branch/main/demo.png)
 
 ## Features
 
