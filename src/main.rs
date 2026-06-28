@@ -1,3 +1,5 @@
+#[allow(unused)]
+
 mod cdtext;
 mod cue;
 mod htoa;
@@ -81,6 +83,10 @@ enum Commands {
         /// Encode tracks in parallel (parallelises the CPU-bound encoding step)
         #[arg(long)]
         parallel: bool,
+
+        // Detect and extract HTOA from Track 1 pregap (IDX 00)
+        #[arg(long)]
+        hidden: bool,
     },
 }
 
@@ -102,7 +108,8 @@ fn main() -> anyhow::Result<()> {
             cue,
             cd_text,
             parallel,
-        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel),
+            hidden,
+        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel, hidden),
     }
 }
 
@@ -169,10 +176,12 @@ fn cmd_rip(
     gen_cue: bool,
     try_cd_text: bool,
     use_parallel: bool,
+    check_hidden: bool,
 ) -> anyhow::Result<()> {
     use crate::{
         cdtext::read_cd_text,
         cue::{write_cue, CueMetadata},
+        htoa::{detect_htoa, extract_htoa, HtoaStatus},
         parallel::default_thread_count,
     };
 
@@ -239,6 +248,48 @@ fn cmd_rip(
 
     let ripper = Ripper::new(&reader, &toc, &raw_toc, &config);
     let manifest = ripper.run()?;
+
+    if check_hidden {
+        let dev_path = device.unwrap_or("/dev/sr0");
+        let spinner = Spinner::new("Checking for hidden tracks...");
+        let status = detect_htoa(dev_path, &toc);
+
+        match &status {
+            HtoaStatus::DriveUnsupported => {
+                spinner.finish_err("Drive does NOT support pregap reads!");
+            }
+            HtoaStatus::NoPregap => {
+                spinner.finish_ok("No HTOA -  standard 2-second lead-in only!");
+            }
+            HtoaStatus::SilentPregap { sectors } => {
+                spinner.finish_ok(format!(
+                    "Pregap present ({} sectors) but silent.. no hidden audio",
+                    sectors
+                ));
+            }
+            HtoaStatus::HtoaDetected { sectors: _, duration_secs } => {
+                spinner.finish_ok(format!(
+                    "HTOA detected! {:.1}s of hidden audio - extracting...",
+                    duration_secs
+                ));
+                match extract_htoa(dev_path, &toc, format, &out) {
+                    Ok(Some(path)) => println!(
+                        "   {} Hidden Track -> {}",
+                        style("✔️").green().bold(),
+                        style(path.display().to_string()).dim()
+                    ),
+                    Ok(None) => println!(
+                        "   {} HTOA read returned empty (silent or driver issue)",
+                        style(".").yellow()
+                    ),
+                    Err(e) => println!(
+                        "   {} HTOA extraction failed: {}",
+                        style("⚠️").yellow(), e
+                    ),
+                }
+            }
+        }
+    }
 
     if gen_cue {
         let mut meta = CueMetadata::empty(toc.track_count());
