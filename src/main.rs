@@ -1,4 +1,8 @@
+mod cdtext;
+mod cue;
+mod htoa;
 mod drive;
+mod parallel;
 mod encoder;
 mod error;
 mod progress;
@@ -29,7 +33,6 @@ struct Cli {
     /// Verbose logging (use -v, -vv for more)
     #[arg(short, long, action = clap::ArgAction::Count, global = true)]
     verbose: u8,
-
     #[command(subcommand)]
     command: Commands,
 }
@@ -66,6 +69,18 @@ enum Commands {
         /// Continue ripping even if a track fails
         #[arg(long)]
         skip_errors: bool,
+
+        /// Generate a CUE sheet alongside the ripped tracks
+        #[arg(long)]
+        cue: bool,
+
+        /// Attempt to read CD-TEXT from the disc (best-effort, many drives unsupported)
+        #[arg(long)]
+        cd_text: bool,
+
+        /// Encode tracks in parallel (parallelises the CPU-bound encoding step)
+        #[arg(long)]
+        parallel: bool,
     },
 }
 
@@ -84,7 +99,10 @@ fn main() -> anyhow::Result<()> {
             track,
             retries,
             skip_errors,
-        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors),
+            cue,
+            cd_text,
+            parallel,
+        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel),
     }
 }
 
@@ -119,7 +137,7 @@ fn cmd_list() -> anyhow::Result<()> {
 }
 
 fn cmd_toc(device: Option<&str>) -> anyhow::Result<()> {
-    let spinner = Spinner::new("Reading Table of Contents…");
+    let spinner = Spinner::new("Reading Table of Contents...");
 
     let reader = match device {
         Some(path) => open_drive(path)?,
@@ -148,7 +166,16 @@ fn cmd_rip(
     track_filter: Option<u8>,
     max_retries: u8,
     skip_errors: bool,
+    gen_cue: bool,
+    try_cd_text: bool,
+    use_parallel: bool,
 ) -> anyhow::Result<()> {
+    use crate::{
+        cdtext::read_cd_text,
+        cue::{write_cue, CueMetadata},
+        parallel::default_thread_count,
+    };
+
     let spinner = Spinner::new("Opening drive…");
     let reader = match device {
         Some(path) => open_drive(path)?,
@@ -156,7 +183,7 @@ fn cmd_rip(
     };
     spinner.finish_ok("Drive opened");
 
-    let spinner = Spinner::new("Reading Table of Contents…");
+    let spinner = Spinner::new("Reading Table of Contents...");
     let (toc, raw_toc) = match read_toc(&reader) {
         Ok((t, r)) => {
             spinner.finish_ok(format!("Found {} track(s)", t.track_count()));
@@ -170,8 +197,40 @@ fn cmd_rip(
 
     print_toc(&toc);
 
+    let cd_text = if try_cd_text {
+        let spinner = Spinner::new("Reading CD-TEXT…");
+        let dev_path = device.unwrap_or("/dev/sr0");
+        match read_cd_text(dev_path, toc.track_count()) {
+            Ok(Some(data)) => {
+                spinner.finish_ok(format!(
+                    "CD-TEXT found: '{}'",
+                    data.album_title.as_deref().unwrap_or("(no title)")
+                ));
+                Some(data)
+            }
+            Ok(None) => {
+                spinner.finish_ok("No CD-TEXT on this disc");
+                None
+            }
+            Err(e) => {
+                spinner.finish_err(format!("CD-TEXT unavailable: {}", e));
+                None
+            }
+        }
+    } else {
+        None
+    };
+
+    if use_parallel {
+        println!(
+            "  {} Parallel encoding enabled ({} threads)",
+            style("·").cyan(),
+            default_thread_count()
+        );
+    }
+
     let config = RipConfig {
-        output_dir: out,
+        output_dir: out.clone(),
         format,
         max_retries,
         skip_errors,
@@ -181,10 +240,35 @@ fn cmd_rip(
     let ripper = Ripper::new(&reader, &toc, &raw_toc, &config);
     let manifest = ripper.run()?;
 
+    if gen_cue {
+        let mut meta = CueMetadata::empty(toc.track_count());
+        if let Some(ref cd) = cd_text {
+            meta.album_title = cd.album_title.clone();
+            meta.album_artist = cd.album_artist.clone();
+            meta.track_titles = cd.track_titles.iter()
+                .map(|t| t.clone())
+                .collect();
+            meta.track_artists = cd.track_artists.iter()
+                .map(|a| a.clone())
+                .collect();
+        }
+        match write_cue(&toc, format, &out, &meta) {
+            Ok(path) => println!(
+                "  {} CUE: {}",
+                style("·").cyan(),
+                style(path.display().to_string()).dim()
+            ),
+            Err(e) => println!(
+                "  {} CUE write failed: {}",
+                style("⚠").yellow(), e
+            ),
+        }
+    }
+
     println!(
-        "  {} Manifest: {}\n",
+        "\n  {} Manifest: {}\n",
         style("·").cyan(),
-        style("cd-manifest.json").dim()
+        style("cdrip-manifest.json").dim()
     );
 
     if manifest.total_errors > 0 {

@@ -112,7 +112,7 @@ pub fn print_toc(toc: &DiscToc) {
     println!();
     println!(
         "  {}",
-        style("=== Table of Contents ===").cyan()
+        style("=============== TABLE OF CONTENTS ===============").cyan()
     );
     println!(
         "  {:>5}  {:>10}  {:>10}  {:>10}  {:>12}",

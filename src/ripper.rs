@@ -154,7 +154,7 @@ impl<'a> Ripper<'a> {
         progress: &mut RipProgress,
     ) -> Result<TrackResult> {
         info!(
-            "Ripping track {:02}: LBA {}–{} ({} sectors)",
+            "Ripping track {:02}: LBA {}-{} ({} sectors)",
             track.number,
             track.start_lba,
             track.start_lba + track.sector_count,
@@ -224,7 +224,7 @@ impl<'a> Ripper<'a> {
             .map_err(|e| CdripError::ManifestFailed(e.to_string()))?;
         std::fs::write(&path, json)
             .map_err(|e| CdripError::ManifestFailed(format!("{}: {}", path.display(), e)))?;
-        info!("Wrote rip manifest → {}", path.display());
+        info!("Wrote rip manifest -> {}", path.display());
         Ok(())
     }
 }

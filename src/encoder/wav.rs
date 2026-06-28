@@ -9,7 +9,7 @@ use tracing::debug;
 
 /// WAV encoder — prepends a standard RIFF/WAVE header to raw PCM data.
 /// No external dependencies; the WAV format is simple enough that we hand-roll
-/// the 44-byte header in little-endian format per the PCM WAV spec.
+/// the 44-byte header in a little-endian format per the PCM WAV spec.
 pub struct WavEncoder;
 
 impl Encoder for WavEncoder {

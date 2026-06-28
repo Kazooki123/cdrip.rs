@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use crate::toc::TrackInfo;
 use console::style;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};

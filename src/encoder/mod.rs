@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 pub mod flac;
 pub mod wav;
 

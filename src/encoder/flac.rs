@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use super::Encoder;
 use crate::error::{CdripError, Result};
 use flac_codec::{

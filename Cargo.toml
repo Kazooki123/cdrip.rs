@@ -1,6 +1,6 @@
 [package]
 name = "cdrip"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A fast, accurate CD ripper in pure Rust - no GNU deps required!"
 license = "MIT"
@@ -8,6 +8,7 @@ authors = ["Kazooki123"]
 readme = "README.md"
 keywords = ["cd", "audio", "ripper", "flac", "wav"]
 categories = ["command-line-utilities", "multimedia::audio"]
+repository = "https://codeberg.org/Kazooki123/cdrip.rs"
 
 [[bin]]
 name = "cdrip"

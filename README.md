@@ -22,11 +22,8 @@ cargo build --release
 
 ## Install
 
-> [!WARNING]
-> Doesn't exist yet, i recommend building it for now but don't worry it'll be in **crates.io** soon :3
-
 ```sh
-cargo install cdrip-rs
+cargo install cdrip
 ```
 
 ## Usage
@@ -44,6 +41,21 @@ cdrip rip
 
 # Rip to WAV
 cdrip rip --format wav
+
+# Generate cue sheets
+cdrip rip --cue
+
+# Reads a CD-TEXT
+cdrip rip --cd-text
+
+# CUE sheet with CD-TEXT populated
+cdrip rip --cue --cd-text
+
+# Parallel Encoding
+cdrip rip --parallel
+
+# Detect if a CD has index 00 (also known as HTOA)
+cdrip rip --hidden
 
 # Rip to a specific directory
 cdrip rip --out ~/Music/rips/
@@ -82,19 +94,26 @@ src/
 ├── ripper.rs       Sector-level rip loop + retry logic + manifest
 ├── progress.rs     indicatif progress bars and spinner (weeeeeee)
 ├── error.rs        thiserror error types
+├── parallel.rs     parallel ripping
+├── cdtext.rs       CD-TEXT reader
+├── cue.rs          Cue Sheets generator
+├── htoa.rs         Hidden Track One Audio detection
 └── encoder/
     ├── mod.rs      Encoder trait and OutputFormat `enum`
     ├── wav.rs      WAV encoder (hand-rolled RIFF header)
     └── flac.rs     FLAC encoder (flac-codec)
+└── id/
+    ├── brainz.rs   MusicBrainz id lookup (musicbrainz_rs)
+    └── gnudb.rs    GnuDB id lookup
 ```
 
 ## Roadmap & TODOs
 
 - [ ] TUI frontend (ratatui) with live waveform preview and sector error heatmap
-- [ ] MusicBrainz disc ID lookup (disc ID derivable from TOC — no extra deps needed)
-- [ ] CD-TEXT reading (where supported by drive)
-- [ ] Parallel track ripping
-- [ ] CUE sheet generation
+- [x] MusicBrainz disc ID lookup (disc ID derivable from TOC — no extra deps needed)
+- [x] CD-TEXT reading (where supported by drive)
+- [x] Parallel track ripping
+- [x] CUE sheet generation
 
 ## License
 

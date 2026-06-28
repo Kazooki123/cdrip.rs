@@ -32,4 +32,3 @@ jobs:
           name: cdrip-release
           path: target/release/cdrip*
           retention-days: 7
-
