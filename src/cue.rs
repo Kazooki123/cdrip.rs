@@ -10,9 +10,6 @@
 //!
 //! Format reference: https://wiki.hydrogenaud.io/index.php?title=Cue_sheet
 
-#[allow(unused)]
-#[allow(dead_code)]
-
 use crate::{
     encoder::OutputFormat,
     toc::{DiscToc, TrackInfo},
@@ -113,10 +110,11 @@ pub fn write_cue(
 /// For split-file CUE sheets each track file starts at 00:00:00 because
 /// the file begins at the track boundary. We still embed the disc-absolute
 /// MSF as a REM comment so the data is preserved.
+#[allow(unused)]
 fn msf_cue(track: &TrackInfo) -> String {
     "00:00:00".to_string()
 }
-
+#[allow(dead_code)]
 pub fn lba_to_msf_string(lba: u32) -> String {
     let total_frames = lba + 150;
     let minutes = total_frames / (75 * 60);

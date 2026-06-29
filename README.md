@@ -42,6 +42,11 @@ cdrip rip
 # Rip to WAV
 cdrip rip --format wav
 
+# Rip with ID lookups (musicbrainz, gnudb.org, itunes)
+cdrip rip --lookup
+cdrip rip --lookup --cue     # populates cue sheet
+cdrip rip --lookup --cd-text # wins over cd-text for cue fields
+
 # Generate cue sheets
 cdrip rip --cue
 
@@ -104,7 +109,9 @@ src/
     └── flac.rs     FLAC encoder (flac-codec)
 └── id/
     ├── brainz.rs   MusicBrainz id lookup (musicbrainz_rs)
-    └── gnudb.rs    GnuDB id lookup
+    ├── itunes.rs   iTunes for enrichment (usually cover arts)
+    ├── gnudb.rs    GnuDB id lookup
+    └── mod.rs      LookupConfig `struct`
 ```
 
 ## Roadmap & TODOs

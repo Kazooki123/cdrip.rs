@@ -1,3 +1,12 @@
+///
+/// ▄█████ ████▄  █████▄  ██ █████▄ 
+/// ██     ██  ██ ██▄▄██▄ ██ ██▄▄█▀ 
+/// ▀█████ ████▀  ██   ██ ██ ██     
+///
+/// CDRIP.RS
+/// COPYRIGHT 2026
+/// KAZOOKI123                             
+
 #[allow(unused)]
 
 mod cdtext;
@@ -10,6 +19,7 @@ mod error;
 mod progress;
 mod ripper;
 mod toc;
+mod id;
 
 use crate::{
     drive::{list_drives, open_default_drive, open_drive},
@@ -83,9 +93,14 @@ enum Commands {
         #[arg(long)]
         parallel: bool,
 
-        // Detect and extract HTOA from Track 1 pregap (IDX 00)
+        /// Detect and extract HTOA from Track 1 pregap (IDX 00)
         #[arg(long)]
         hidden: bool,
+
+        /// Look up disc metadata (MusicBrainz -> GnuDB -> iTunes).
+        /// Populates the manifest and CUE sheet file with album/track infos.
+        #[arg(long)]
+        lookup: bool,
     },
 }
 
@@ -108,7 +123,8 @@ fn main() -> anyhow::Result<()> {
             cd_text,
             parallel,
             hidden,
-        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel, hidden),
+            lookup,
+        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel, hidden, lookup),
     }
 }
 
@@ -176,11 +192,13 @@ fn cmd_rip(
     try_cd_text: bool,
     use_parallel: bool,
     check_hidden: bool,
+    do_lookup: bool,
 ) -> anyhow::Result<()> {
     use crate::{
         cdtext::read_cd_text,
         cue::{write_cue, CueMetadata},
         htoa::{detect_htoa, extract_htoa, HtoaStatus},
+        id::{lookup_all, LookupConfig},
         parallel::default_thread_count,
     };
 
@@ -225,6 +243,28 @@ fn cmd_rip(
                 None
             }
         }
+    } else {
+        None
+    };
+
+    let lookup_meta = if do_lookup {
+        let spinner = Spinner::new("Looking up disc metadata...");
+        let cfg = LookupConfig::default();
+        let meta = lookup_all(&toc, &cfg);
+
+        if meta.is_useful() {
+            spinner.finish_ok(format!(
+                "Found: '{}' '{}'",
+                meta.album_title.as_deref().unwrap_or("?"),
+                meta.album_artist
+                    .as_deref()
+                    .map(|a| format!(" by {}" ,a))
+                    .unwrap_or_default()
+            ));
+        } else {
+            spinner.finish_ok("No match found - ripping without metadata...");
+        }
+        Some(meta)
     } else {
         None
     };
@@ -292,10 +332,15 @@ fn cmd_rip(
 
     if gen_cue {
         let mut meta = CueMetadata::empty(toc.track_count());
-        if let Some(ref cd) = cd_text {
-            meta.album_title = cd.album_title.clone();
-            meta.album_artist = cd.album_artist.clone();
-            meta.track_titles = cd.track_titles.iter()
+        if let Some(ref lm) = lookup_meta {
+            meta.album_title   = lm.album_title.clone();
+            meta.album_artist  = lm.album_artist.clone();
+            meta.track_titles  = lm.track_titles.clone();
+            meta.track_artists = lm.track_artists.clone();
+        } else if let Some(ref cd) = cd_text {
+            meta.album_title   = cd.album_title.clone();
+            meta.album_artist  = cd.album_artist.clone();
+            meta.track_titles  = cd.track_titles.iter()
                 .map(|t| t.clone())
                 .collect();
             meta.track_artists = cd.track_artists.iter()

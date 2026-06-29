@@ -1,6 +1,6 @@
 [package]
 name = "cdrip"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "A fast, accurate CD ripper in pure Rust - no GNU deps required!"
 license = "MIT"
@@ -25,6 +25,10 @@ thiserror = "1"
 
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+cdtoc = { version = "0.3", features = ["musicbrainz", "cddb"] }
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+urlencoding = "2"
 
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }

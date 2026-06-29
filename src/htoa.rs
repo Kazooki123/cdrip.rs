@@ -34,7 +34,6 @@
 //! https://wiki.hydrogenaudio.org/index.php?title=HTOA
 
 #[allow(unused)]
-
 use crate::{
     encoder::{make_encoder, OutputFormat},
     error::{CdripError, Result},
@@ -47,6 +46,8 @@ use tracing::{debug, info, warn};
 /// Standard 2-second lead-in in sectors (75 sectors/sec × 2 sec).
 /// All CDs have at least this many pregap sectors; it's usually silence.
 pub const STANDARD_PREGAP_SECTORS: u32 = 150;
+
+#[allow(unused)]
 pub const HTOA_LIKELY_THRESHOLD_SECTORS: u32 = 450;
 
 /// Minimum non-zero bytes in a sampled sector to consider it non-silent.

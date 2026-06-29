@@ -16,14 +16,13 @@
 //! The `rayon` feature flag on `indicatif` is already enabled in Cargo.toml,
 //! so progress bars work safely across threads.
 
-#[allow(unused)]
-#[allow(dead_code)]
-
+#[allow(unused_imports)]
 use crate::{
     encoder::{make_encoder, OutputFormat},
     error::{CdripError, Result},
     toc::TrackInfo,
 };
+#[allow(unused_imports)]
 use std::{
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
@@ -34,6 +33,7 @@ use tracing::{info, warn};
 // Encode job
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct EncodeJob {
     pub track_num: u8,
     pub pcm: Vec<u8>,
@@ -42,6 +42,7 @@ pub struct EncodeJob {
 
 /// Result of a completed encode job.
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct EncodeResult {
     pub track_num: u8,
     pub output_path: PathBuf,
@@ -50,6 +51,7 @@ pub struct EncodeResult {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+#[allow(dead_code)]
 pub enum EncodeStatus {
     Ok,
     Failed(String),
@@ -61,6 +63,7 @@ pub enum EncodeStatus {
 /// needed. The number of concurrent threads is bounded by `max_threads`.
 /// Returns results in *completion* order (not track order). Callers should
 /// sort by `track_num` if order matters (e.g. for the manifest).
+#[allow(dead_code)]
 pub fn encode_parallel(
     jobs: Vec<EncodeJob>,
     format: OutputFormat,
