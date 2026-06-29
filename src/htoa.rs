@@ -1,4 +1,4 @@
-//! Hidden Track One Audio (HTOA)
+//! # Hidden Track One Audio (HTOA)
 //! 
 //! HTOA is audio data hidden in the Index 00 pregap of Track 1 — the region
 //! *BEFORE* normal playback begins. CD players skip it entirely; you have to

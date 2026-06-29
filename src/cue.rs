@@ -11,6 +11,7 @@
 //! Format reference: https://wiki.hydrogenaud.io/index.php?title=Cue_sheet
 
 #[allow(unused)]
+#[allow(dead_code)]
 
 use crate::{
     encoder::OutputFormat,

@@ -56,7 +56,7 @@ pub enum EncodeStatus {
 }
 
 // Parallel encoder pool
-/// Encode a batch of PCM jobs in parallel using a thread-per-job model.
+/// Encodes a batch of PCM jobs in parallel using a thread-per-job model.
 /// Jobs are spawned via `std::thread::spawn`; no external thread-pool crate
 /// needed. The number of concurrent threads is bounded by `max_threads`.
 /// Returns results in *completion* order (not track order). Callers should

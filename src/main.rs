@@ -28,11 +28,11 @@ use tracing::Level;
     name = "cdrip",
     about = "A fast, accurate CD ripper in pure Rust 💿",
     version,
-    author,
+    author = "Kazooki123",
     long_about = None
 )]
+
 struct Cli {
-    /// Verbose logging (use -v, -vv for more)
     #[arg(short, long, action = clap::ArgAction::Count, global = true)]
     verbose: u8,
     #[command(subcommand)]
@@ -43,7 +43,6 @@ struct Cli {
 enum Commands {
     List,
     Toc {
-        /// Device path (auto-detected if omitted)
         #[arg(short, long)]
         device: Option<String>,
     },
