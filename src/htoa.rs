@@ -311,7 +311,7 @@ mod linux {
             host_status: 0, driver_status: 0, resid: 0, duration: 0, info: 0,
         };
 
-        extern "C" { fn ioctl(fd: i32, req: u64, ...) -> i32; }
+        unsafe extern "C" { fn ioctl(fd: i32, req: u64, ...) -> i32; }
 
         let ret = unsafe { ioctl(fd, 0x2285, &hdr as *const SgIoHdr) };
 

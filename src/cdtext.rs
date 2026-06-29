@@ -289,7 +289,7 @@ mod linux {
         Ok(buf[..data_len].to_vec())
     }
 
-    extern "C" {
+    unsafe extern "C" {
         fn ioctl(fd: i32, request: u64, ...) -> i32;
     }
 
