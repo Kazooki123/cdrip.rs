@@ -104,8 +104,8 @@ impl Default for LookupConfig {
             use_musicbrainz: true,
             use_gnudb: true,
             use_itunes: true,
-            gnudb_email: "cdrip@example.com".to_string(),
-            user_agent: format!("cdrip/{} (https://github.com/you/cdrip)", env!("CARGO_PKG_VERSION")),
+            gnudb_email: "mgamerdinge146@gmail.com".to_string(),
+            user_agent: format!("cdrip/{} (https://github.com/Kazooki123/cdrip.rs)", env!("CARGO_PKG_VERSION")),
         }
     }
 }
