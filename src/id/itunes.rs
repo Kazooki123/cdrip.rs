@@ -172,13 +172,13 @@ mod tests {
     #[test]
     fn search_term_strips_parens() {
         let term = build_search_term("Nirvana", "Nevermind (Remastered)");
-        assert_eq!(term, "Nirvana Nevermind ");
+        assert_eq!(term, "Nirvana Nevermind");
     }
 
     #[test]
     fn search_term_strips_brackets() {
         let term = build_search_term("Nirvana", "Nevermind [Deluxe Edition]");
-        assert_eq!(term, "Nirvana Nevermind ");
+        assert_eq!(term, "Nirvana Nevermind");
     }
 
     #[test]
