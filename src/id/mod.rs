@@ -122,7 +122,7 @@ pub fn lookup_all(toc: &DiscToc, config: &LookupConfig) -> DiscMetadata {
 
     // 1. MusicBrainz
     if config.use_musicbrainz {
-        info!("Trying MusicBrainz lookup…");
+        info!("Trying MusicBrainz lookup...");
         match brainz::lookup(toc, config) {
             Ok(mb_meta) => {
                 debug!("MusicBrainz: {:?}", mb_meta.album_title);
@@ -136,7 +136,7 @@ pub fn lookup_all(toc: &DiscToc, config: &LookupConfig) -> DiscMetadata {
 
     // 2. GNUDB
     if config.use_gnudb && !meta.is_useful() {
-        info!("Trying GnuDB lookup…");
+        info!("Trying GnuDB lookup...");
         match gnudb::lookup(toc, config) {
             Ok(gn_meta) => {
                 debug!("GnuDB: {:?}", gn_meta.album_title);
@@ -153,7 +153,7 @@ pub fn lookup_all(toc: &DiscToc, config: &LookupConfig) -> DiscMetadata {
     if config.use_itunes && meta.album_title.is_some() && meta.cover_art_url.is_none() {
         let artist = meta.album_artist.as_deref().unwrap_or("");
         let album = meta.album_title.as_deref().unwrap_or("");
-        info!("Trying iTunes enrichment for \"{}\" by \"{}\"…", album, artist);
+        info!("Trying iTunes enrichment for \"{}\" by \"{}\"...", album, artist);
         match itunes::lookup(artist, album, config) {
             Ok(it_meta) => {
                 debug!("iTunes cover art: {:?}", it_meta.cover_art_url);

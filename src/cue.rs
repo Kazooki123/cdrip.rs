@@ -23,7 +23,8 @@ use std::{
 // CUE metadata
 /// Optional disc-level metadata to embed in the CUE sheet.
 /// All fields are optional — cdrip doesn't force you to enter anything.
-/// If MusicBrainz lookup is added in v1 this struct gets populated automatically.
+/// 
+/// ~~If MusicBrainz lookup is added in v1 this struct gets populated automatically.~~
 #[derive(Debug, Clone, Default)]
 pub struct CueMetadata {
     pub album_title: Option<String>,

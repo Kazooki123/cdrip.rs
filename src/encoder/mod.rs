@@ -2,6 +2,7 @@
 
 pub mod flac;
 pub mod wav;
+pub mod mp3;
 
 use crate::error::Result;
 use std::path::PathBuf;

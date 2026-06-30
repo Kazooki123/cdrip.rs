@@ -130,7 +130,7 @@ fn main() -> anyhow::Result<()> {
 
 // Subcommand implementations
 fn cmd_list() -> anyhow::Result<()> {
-    println!("\n  {} Scanning for optical drives…\n", style("●").cyan());
+    println!("\n  {} Scanning for optical drives...\n", style("●").cyan());
 
     let drives = list_drives();
 
@@ -202,7 +202,7 @@ fn cmd_rip(
         parallel::default_thread_count,
     };
 
-    let spinner = Spinner::new("Opening drive…");
+    let spinner = Spinner::new("Opening drive...");
     let reader = match device {
         Some(path) => open_drive(path)?,
         None => open_default_drive()?,
@@ -224,7 +224,7 @@ fn cmd_rip(
     print_toc(&toc);
 
     let cd_text = if try_cd_text {
-        let spinner = Spinner::new("Reading CD-TEXT…");
+        let spinner = Spinner::new("Reading CD-TEXT...");
         let dev_path = device.unwrap_or("/dev/sr0");
         match read_cd_text(dev_path, toc.track_count()) {
             Ok(Some(data)) => {

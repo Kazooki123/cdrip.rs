@@ -6,7 +6,6 @@ use tracing::{debug, info, warn};
 pub struct DriveInfo {
     /// Platform-specific device path, e.g. `/dev/sr0`, `\\.\D:`, `/dev/disk2`
     pub path: String,
-    /// Whether a disc is currently inserted (best-effort)
     pub has_disc: bool,
 }
 

@@ -79,7 +79,7 @@ impl RipProgress {
         self.retry_count += 1;
         if let Some(bar) = &self.track_bar {
             bar.set_message(format!(
-                "{} retrying sector {}…",
+                "{} retrying sector {}...",
                 style("⚠").yellow(),
                 lba
             ));

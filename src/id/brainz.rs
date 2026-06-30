@@ -56,7 +56,7 @@ pub fn lookup(toc: &DiscToc, config: &LookupConfig) -> LookupResult {
     }
 
     if resp.status() == reqwest::StatusCode::NOT_FOUND {
-        warn!("Disc ID not found in MB, trying fuzzy TOC search…");
+        warn!("Disc ID not found in MB, trying fuzzy TOC search...");
         return fuzzy_toc_lookup(&client, toc, &disc_id, config);
     }
 
