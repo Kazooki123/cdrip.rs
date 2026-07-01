@@ -1,6 +1,6 @@
 [package]
 name = "cdrip"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 description = "A fast, accurate CD ripper in pure Rust - no GNU deps required!"
 license = "MIT"
@@ -37,6 +37,14 @@ zbus = "5.16.0"
 
 ratatui = "0.30"
 crossterm = "0.29"
+
+[features]
+default = []
+mp3 = ["dep:mp3lame-encoder"]
+
+[dependencies.mp3lame-encoder]
+version = "0.2"
+optional = true
 
 [profile.release]
 opt-level = 3

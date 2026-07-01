@@ -13,7 +13,7 @@ A fast, accurate CD ripper written in pure Rust. **No GNU dependencies**, no `cd
 - **Progress display** — live sector-level progress bars with error/retry counters
 - **Rip manifest** — JSON log of every track's result, file size, errors, retries
 - **Hidden tracks** — Detect tracks that are hidden inside your CDs
-- **Enhanced CD** — Rip CDs with *extra* media data on it (coming soon)
+- **Enhanced CD** — Rip CDs with *extra* media data on it
 
 > [!WARNING]
 > For Mac users, some features such as htoa and cd-text are entirely skipped since i have no hardware for it to test, plus Apple's IOKit tight restrictions API.. You're free to contribute if you want to add a platform support.
@@ -137,10 +137,14 @@ src/
 - [x] TUI frontend (ratatui) with live waveform preview and sector error heatmap
 - [x] MusicBrainz disc ID lookup (disc ID derivable from TOC — no extra deps needed)
 - [x] CD-TEXT reading (where supported by drive)
-- [ ] CD-Extra (Enhanced CD) detection and ripping
-- [ ] MP3 Encoding
+- [x] CD-Extra (Enhanced CD) detection and ripping
+- [x] MP3 Encoding
 - [x] Parallel track ripping
 - [x] CUE sheet generation
+
+## Contributing
+
+Read the [CONTRIBUTION](CONTRIBUTING.md) manual while you're at it </3
 
 ## License
 

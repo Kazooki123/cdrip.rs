@@ -98,7 +98,7 @@ fn cddb_query(
     parse_query_response(&text)
 }
 
-/// Parse the CDDB query response into (category, disc_id) pairs.
+/// Parses the CDDB query response into (category, disc_id) pairs.
 ///
 /// Response codes:
 /// - `200` = exact match (single line)

@@ -46,7 +46,7 @@ impl CdTextData {
 /// `Ok(None)` if the drive doesn't support it or the disc has no CD-TEXT,
 /// `Err(_)` only on hard I/O errors.
 pub fn read_cd_text(device_path: &str, track_count: u8) -> Result<Option<CdTextData>, CdTextError> {
-    debug!("Attempting CD-TEXT read from {}", device_path);
+    debug!("Attempting CD-TEXT read from {}..", device_path);
 
     #[cfg(target_os = "linux")]
     {

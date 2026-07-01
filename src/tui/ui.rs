@@ -40,7 +40,7 @@ fn draw_title_bar(frame: &mut Frame, app: &App, area: Rect) {
         Screen::DriveSelect => "Select Drive",
         Screen::TrackList   => "Track Selection",
         Screen::Ripping     => "Ripping...",
-        Screen::Done        => "Rip Complete",
+        Screen::Done        => "Rip Complete!",
     };
 
     let title = Line::from(vec![

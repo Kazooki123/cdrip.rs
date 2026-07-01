@@ -104,7 +104,7 @@ fn fuzzy_toc_lookup(
 
 /// ## Disc ID calculation 
 /// 
-/// Compute the MusicBrainz disc ID from our `DiscToc`.
+/// Compute the MusicBrainz disc ID from the `DiscToc`.
 ///
 /// Uses the `cdtoc` crate which implements the MB disc ID algorithm:
 /// SHA-1 of a binary structure encoding the first track, last track,

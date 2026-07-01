@@ -6,6 +6,7 @@
 /// CDRIP.RS
 /// COPYRIGHT 2026
 /// KAZOOKI123
+/// 
 
 #[allow(unused)]
 
@@ -45,6 +46,7 @@ use tracing::Level;
 )]
 
 struct Cli {
+    /// Verbose logging (use -v, -vv for more)
     #[arg(short, long, action = clap::ArgAction::Count, global = true)]
     verbose: u8,
     #[command(subcommand)]
@@ -107,6 +109,11 @@ enum Commands {
         /// Populates the manifest and CUE sheet file with album/track infos.
         #[arg(long)]
         lookup: bool,
+
+        /// Detect and extract CD-Extra / Enhanced CD data session as a `.iso` image.
+        /// Confirms ISO9660 filesystem presence before extracting.
+        #[arg(long)]
+        cdextra: bool,
     },
 }
 
@@ -131,7 +138,8 @@ fn main() -> anyhow::Result<()> {
             parallel,
             hidden,
             lookup,
-        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel, hidden, lookup),
+            cdextra,
+        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel, hidden, lookup, cdextra),
     }
 }
 
@@ -200,11 +208,13 @@ fn cmd_rip(
     use_parallel: bool,
     check_hidden: bool,
     do_lookup: bool,
+    check_cdextra: bool,
 ) -> anyhow::Result<()> {
     use crate::{
         cdtext::read_cd_text,
         cue::{write_cue, CueMetadata},
         htoa::{detect_htoa, extract_htoa, HtoaStatus},
+        cdextra::{detect_cdextra, extract_cdextra, probe_cdextra, CdExtraStatus},
         id::{lookup_all, LookupConfig},
         parallel::default_thread_count,
     };
@@ -332,6 +342,45 @@ fn cmd_rip(
                         "   {} HTOA extraction failed: {}",
                         style("⚠").yellow(), e
                     ),
+                }
+            }
+        }
+    }
+    
+    if check_cdextra {
+        let dev_path = device.unwrap_or("/dev/sr0");
+        let spinner = Spinner::new("Scanning for CD-Extra data session...");
+        let status = detect_cdextra(dev_path, &toc);
+        match &status {
+            CdExtraStatus::NoDataTrack => {
+                spinner.finish_ok("No data session - standard audio CD");
+            }
+            CdExtraStatus::DataTrackNotIso9660 { data_start_lba } => {
+                spinner.finish_ok(format!(
+                    "Data track at LBA {} - non-ISO9660 (skipping extract)",
+                    data_start_lba
+                ));
+            }
+            CdExtraStatus::CdExtraDetected { size_mib, .. } => {
+                spinner.finish_ok(format!(
+                    "CD-Extra detected ({:.1} MiB) - extracting ISO…",
+                    size_mib
+                ));
+                if let Some(info) = probe_cdextra(dev_path, &toc) {
+                    if let Some(ref label) = info.volume_label {
+                        println!("  {} Volume label: {}", style("·").cyan(), style(label).yellow());
+                    }
+                    match extract_cdextra(dev_path, &info, &out) {
+                        Ok(path) => println!(
+                            "  {} ISO: {}",
+                            style("✓").green().bold(),
+                            style(path.display().to_string()).dim()
+                        ),
+                        Err(e) => println!(
+                            "  {} CD-Extra extract failed: {}",
+                            style("⚠").yellow(), e
+                        ),
+                    }
                 }
             }
         }
