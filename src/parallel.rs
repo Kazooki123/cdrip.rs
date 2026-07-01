@@ -1,16 +1,16 @@
 //! Parallel encoding support.
 //!
-//! A physical CD drive has one laser head — true parallel *reading* of multiple
+//! A physical CD drive has one laser head - true parallel *reading* of multiple
 //! tracks simultaneously is not possible. What we CAN parallelise is the CPU-
 //! bound encoding step (especially FLAC, which is compute-heavy).
 //!
 //! Strategy:
 //!   1. Read all tracks sequentially from the drive (only one can read at a time).
-//!   2. Dispatch encoding jobs to a thread pool — each track's PCM buffer is
+//!   2. Dispatch encoding jobs to a thread pool - each track's PCM buffer is
 //!      encoded independently and concurrently.
 //!
-//! This gives a significant speedup on multi-core machines: on a 12-track disc
-//! with FLAC encoding you can expect ~3–6× faster total time depending on core
+//! This gives us a significant speedup on multi-core machines: on a 12-track disc
+//! with FLAC encoding, you can expect a ~3–6× faster total time depending on the core
 //! count and compression preset.
 //!
 //! The `rayon` feature flag on `indicatif` is already enabled in Cargo.toml,
@@ -163,7 +163,6 @@ pub fn default_thread_count() -> usize {
     (cpus / 2).clamp(1, 8)
 }
 
-// TESTS
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -8,7 +8,7 @@
 //!
 //! The CDDB disc ID is an 8-digit hex number computed as:
 //! 1. For each track, sum the digits of its start time in seconds.
-//!    (e.g. track starting at 95 seconds → 9 + 5 = 14)
+//!    (e.g. track starting at 95 seconds -> 9 + 5 = 14)
 //! 2. Sum all those digit-sums, call it `n`.
 //! 3. disc_id = ((n % 255) << 24) | (total_seconds << 8) | track_count
 //!

@@ -3,3 +3,5 @@
 /music/
 *.json
 Cargo.lock
+*.flac
+*.cue

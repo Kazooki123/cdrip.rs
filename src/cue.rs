@@ -128,20 +128,19 @@ fn escape_cue(s: &str) -> String {
     s.replace('"', "'")
 }
 
-// TESTS
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn lba_to_msf_lead_in_offset() {
-        // LBA 0 → 150 total frames → 00:02:00
+        // LBA 0 -> 150 total frames -> 00:02:00
         assert_eq!(lba_to_msf_string(0), "00:02:00");
     }
 
     #[test]
     fn lba_to_msf_one_second() {
-        // LBA 75 → 225 total frames → 00:03:00
+        // LBA 75 -> 225 total frames -> 00:03:00
         assert_eq!(lba_to_msf_string(75), "00:03:00");
     }
 

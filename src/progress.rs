@@ -102,7 +102,7 @@ impl RipProgress {
     pub fn finish_track(&mut self, track_num: u8, output: &str) {
         if let Some(bar) = self.track_bar.take() {
             bar.finish_with_message(format!(
-                "{} → {}",
+                "{} -> {}",
                 style("✓").green().bold(),
                 style(output).dim()
             ));

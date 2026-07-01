@@ -12,7 +12,8 @@ A fast, accurate CD ripper written in pure Rust. **No GNU dependencies**, no `cd
 - **Retry logic** — configurable per-sector retry count with silence substitution fallback
 - **Progress display** — live sector-level progress bars with error/retry counters
 - **Rip manifest** — JSON log of every track's result, file size, errors, retries
-- **TUI-ready** — progress layer designed to be promoted to a full TUI (coming soon)
+- **Hidden tracks** — Detect tracks that are hidden inside your CDs
+- **Enhanced CD** — Rip CDs with *extra* media data on it (comming soon)
 
 > [!WARNING]
 > For Mac users, some features such as htoa and cd-text are entirely skipped since i have no hardware for it to test, plus Apple's IOKit tight restrictions API.. You're free to contribute if you want to add a platform support.
@@ -74,11 +75,25 @@ cdrip rip --track 3
 # Rip with specific device + more retries, keep going on errors
 cdrip rip --device /dev/sr0 --retries 10 --skip-errors
 
+# TUI
+cdrip tui
+
 # Verbose logging
 cdrip rip -v       # info
 cdrip rip -vv      # debug
 cdrip rip -vvv     # trace
 ```
+
+## TUI
+
+**Yet Another CD Ripper** (YACR)
+
+[![Built With Ratatui](https://img.shields.io/badge/Built_With_Ratatui-000?logo=ratatui&logoColor=fff)](https://ratatui.rs/)
+
+YACR is a TUI application that lets you rip your CDs with interfaces in the terminal! 🐀💿
+
+- **Demo:** Ripping **Never Enough** by **Daniel Caesar**
+![yacr](https://codeberg.org/Kazooki123/cdrip.rs/raw/branch/main/yacr.png)
 
 ## Output
 
@@ -119,9 +134,11 @@ src/
 
 ## Roadmap & TODOs
 
-- [ ] TUI frontend (ratatui) with live waveform preview and sector error heatmap
+- [x] TUI frontend (ratatui) with live waveform preview and sector error heatmap
 - [x] MusicBrainz disc ID lookup (disc ID derivable from TOC — no extra deps needed)
 - [x] CD-TEXT reading (where supported by drive)
+- [ ] CD-Extra (Enhanced CD) detection and ripping
+- [ ] MP3 Encoding
 - [x] Parallel track ripping
 - [x] CUE sheet generation
 

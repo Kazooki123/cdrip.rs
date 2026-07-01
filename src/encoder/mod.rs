@@ -11,6 +11,7 @@ use std::path::PathBuf;
 pub enum OutputFormat {
     Wav,
     Flac,
+    // Mp3,
 }
 
 impl std::fmt::Display for OutputFormat {
@@ -18,6 +19,7 @@ impl std::fmt::Display for OutputFormat {
         match self {
             OutputFormat::Wav => write!(f, "WAV"),
             OutputFormat::Flac => write!(f, "FLAC"),
+            // OutputFormat::Mp3 => write!(f, "MP3"),
         }
     }
 }
@@ -27,6 +29,7 @@ impl OutputFormat {
         match self {
             OutputFormat::Wav => "wav",
             OutputFormat::Flac => "flac",
+            // OutputFormat::Mp3 => "mp3",
         }
     }
 }
@@ -46,7 +49,8 @@ pub trait Encoder {
 /// Build the correct encoder for the requested format.
 pub fn make_encoder(format: OutputFormat) -> Box<dyn Encoder> {
     match format {
-        OutputFormat::Wav => Box::new(wav::WavEncoder),
+        OutputFormat::Wav  => Box::new(wav::WavEncoder),
         OutputFormat::Flac => Box::new(flac::FlacEncoder::default()),
+        // OutputFormat::Mp3  => Box::new(mp3::Mp3Encoder),
     }
 }

@@ -64,7 +64,7 @@ impl Encoder for FlacEncoder {
         })?;
 
         debug!(
-            "FLAC track {:02}: encoded {} PCM bytes → {}",
+            "FLAC track {:02}: encoded {} PCM bytes -> {}",
             track_num,
             pcm_data.len(),
             output_path.display()

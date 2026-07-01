@@ -203,7 +203,7 @@ pub fn extract_htoa(
 
     encoder.encode(0, &pcm, &output_path)?;
 
-    info!("HTOA extracted → {}", output_path.display());
+    info!("HTOA extracted -> {}", output_path.display());
     Ok(Some(output_path))
 }
 
@@ -403,7 +403,6 @@ mod windows {
     }
 }
 
-// TESTS
 #[cfg(test)]
 mod tests {
     use super::*;

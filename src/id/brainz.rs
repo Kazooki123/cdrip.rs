@@ -109,7 +109,7 @@ fn fuzzy_toc_lookup(
 /// Uses the `cdtoc` crate which implements the MB disc ID algorithm:
 /// SHA-1 of a binary structure encoding the first track, last track,
 /// lead-out offset, and all track offsets, then base64url encoded with
-/// MB's own alphabet substitutions (+→., /→_, =→-).
+/// MB's own alphabet substitutions (+->., /->_, =->-).
 fn compute_disc_id(toc: &DiscToc) -> Result<String, LookupError> {
     // Build the cdtoc::Toc from our track offsets
     let offsets: Vec<u32> = toc.tracks.iter().map(|t| t.start_lba).collect();

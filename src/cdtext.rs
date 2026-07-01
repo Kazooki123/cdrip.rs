@@ -406,7 +406,6 @@ impl std::fmt::Display for CdTextError {
     }
 }
 
-// TESTS
 #[cfg(test)]
 mod tests {
     use super::*;

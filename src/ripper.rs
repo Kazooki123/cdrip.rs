@@ -15,7 +15,6 @@ use tracing::{info, warn};
 pub struct RipConfig {
     pub output_dir: PathBuf,
     pub format: OutputFormat,
-    /// Maximum number of times to re-read a bad sector before giving up.
     pub max_retries: u8,
     /// If true, keep going after a track fails..
     pub skip_errors: bool,
@@ -93,7 +92,7 @@ impl<'a> Ripper<'a> {
         let mut failed: u8 = 0;
 
         println!(
-            "\n  {} Ripping {} track(s) as {} → {}\n",
+            "\n  {} Ripping {} track(s) as {} -> {}\n",
             style("▶").cyan().bold(),
             total,
             style(self.config.format.to_string()).green(),

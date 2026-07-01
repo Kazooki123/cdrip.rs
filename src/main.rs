@@ -5,11 +5,12 @@
 ///
 /// CDRIP.RS
 /// COPYRIGHT 2026
-/// KAZOOKI123                             
+/// KAZOOKI123
 
 #[allow(unused)]
 
 mod cdtext;
+mod cdextra;
 mod cue;
 mod htoa;
 mod drive;
@@ -20,6 +21,7 @@ mod progress;
 mod ripper;
 mod toc;
 mod id;
+mod tui;
 
 use crate::{
     drive::{list_drives, open_default_drive, open_drive},
@@ -55,6 +57,10 @@ enum Commands {
     Toc {
         #[arg(short, long)]
         device: Option<String>,
+    },
+    Tui {
+        #[arg(short, long, default_value = ".")]
+        out: PathBuf,
     },
     Rip {
         /// Device path (auto-detected if omitted)
@@ -111,6 +117,7 @@ fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::List => cmd_list(),
+        Commands::Tui { out } => crate::tui::run(out),
         Commands::Toc { device } => cmd_toc(device.as_deref()),
         Commands::Rip {
             device,
@@ -314,7 +321,7 @@ fn cmd_rip(
                 match extract_htoa(dev_path, &toc, format, &out) {
                     Ok(Some(path)) => println!(
                         "   {} Hidden Track -> {}",
-                        style("✔️").green().bold(),
+                        style("✓").green().bold(),
                         style(path.display().to_string()).dim()
                     ),
                     Ok(None) => println!(
@@ -323,7 +330,7 @@ fn cmd_rip(
                     ),
                     Err(e) => println!(
                         "   {} HTOA extraction failed: {}",
-                        style("⚠️").yellow(), e
+                        style("⚠").yellow(), e
                     ),
                 }
             }

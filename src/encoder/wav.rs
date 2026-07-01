@@ -32,7 +32,7 @@ impl Encoder for WavEncoder {
         })?;
 
         debug!(
-            "WAV track {:02}: wrote {} bytes ({} PCM + 44 header) → {}",
+            "WAV track {:02}: wrote {} bytes ({} PCM + 44 header) -> {}",
             track_num,
             pcm_data.len() + 44,
             pcm_data.len(),
