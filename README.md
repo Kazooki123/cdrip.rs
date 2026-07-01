@@ -13,7 +13,7 @@ A fast, accurate CD ripper written in pure Rust. **No GNU dependencies**, no `cd
 - **Progress display** — live sector-level progress bars with error/retry counters
 - **Rip manifest** — JSON log of every track's result, file size, errors, retries
 - **Hidden tracks** — Detect tracks that are hidden inside your CDs
-- **Enhanced CD** — Rip CDs with *extra* media data on it (comming soon)
+- **Enhanced CD** — Rip CDs with *extra* media data on it (coming soon)
 
 > [!WARNING]
 > For Mac users, some features such as htoa and cd-text are entirely skipped since i have no hardware for it to test, plus Apple's IOKit tight restrictions API.. You're free to contribute if you want to add a platform support.
