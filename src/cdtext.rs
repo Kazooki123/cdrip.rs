@@ -361,7 +361,7 @@ mod windows {
         unsafe { CloseHandle(handle) };
 
         if ok == 0 || bytes_returned < 4 {
-            return Ok(Vec::new()); // No CD-TEXT
+            return Ok(Vec::new());
         }
 
         Ok(buf[..bytes_returned as usize].to_vec())

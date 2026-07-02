@@ -119,7 +119,7 @@ fn compute_disc_id(toc: &DiscToc) -> Result<String, LookupError> {
         None,
         toc.total_sectors,
     )
-    .map_err(|e| LookupError::NoDiscId)?;
+    .map_err(|_e| LookupError::NoDiscId)?;
 
     Ok(cdtoc.musicbrainz_id().to_string())
 }

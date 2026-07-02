@@ -107,7 +107,7 @@ fn draw_drive_select(frame: &mut Frame, app: &App, area: Rect) {
 }
 
 fn draw_track_list(frame: &mut Frame, app: &App, area: Rect) {
-    let theme = &app.theme;
+    let _theme = &app.theme;
 
     let cols = Layout::default()
         .direction(Direction::Horizontal)

@@ -25,7 +25,7 @@
 
 use super::{DiscMetadata, LookupConfig, LookupError, LookupResult};
 use crate::toc::DiscToc;
-use tracing::{debug, warn};
+use tracing::debug;
 
 const GNUDB_URL: &str = "http://gnudb.gnudb.org/~cddb/cddb.cgi";
 

@@ -1,27 +1,26 @@
+mod cdextra;
 ///
-/// ▄█████ ████▄  █████▄  ██ █████▄ 
-/// ██     ██  ██ ██▄▄██▄ ██ ██▄▄█▀ 
+/// ▄█████ ████▄  █████▄  ██ █████▄
+/// ██     ██  ██ ██▄▄██▄ ██ ██▄▄█▀
 /// ▀█████ ████▀  ██   ██ ██ ██     
 ///
 /// CDRIP.RS
 /// COPYRIGHT 2026
 /// KAZOOKI123
-/// 
+///
 
 #[allow(unused)]
-
 mod cdtext;
-mod cdextra;
 mod cue;
-mod htoa;
 mod drive;
-mod parallel;
 mod encoder;
 mod error;
+mod htoa;
+mod id;
+mod parallel;
 mod progress;
 mod ripper;
 mod toc;
-mod id;
 mod tui;
 
 use crate::{
@@ -117,7 +116,6 @@ enum Commands {
     },
 }
 
-// Entry point
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     setup_tracing(cli.verbose);
@@ -139,7 +137,20 @@ fn main() -> anyhow::Result<()> {
             hidden,
             lookup,
             cdextra,
-        } => cmd_rip(device.as_deref(), out, format, track, retries, skip_errors, cue, cd_text, parallel, hidden, lookup, cdextra),
+        } => cmd_rip(
+            device.as_deref(),
+            out,
+            format,
+            track,
+            retries,
+            skip_errors,
+            cue,
+            cd_text,
+            parallel,
+            hidden,
+            lookup,
+            cdextra,
+        ),
     }
 }
 
@@ -211,11 +222,11 @@ fn cmd_rip(
     check_cdextra: bool,
 ) -> anyhow::Result<()> {
     use crate::{
+        cdextra::{CdExtraStatus, detect_cdextra, extract_cdextra, probe_cdextra},
         cdtext::read_cd_text,
-        cue::{write_cue, CueMetadata},
-        htoa::{detect_htoa, extract_htoa, HtoaStatus},
-        cdextra::{detect_cdextra, extract_cdextra, probe_cdextra, CdExtraStatus},
-        id::{lookup_all, LookupConfig},
+        cue::{CueMetadata, write_cue},
+        htoa::{HtoaStatus, detect_htoa, extract_htoa},
+        id::{LookupConfig, lookup_all},
         parallel::default_thread_count,
     };
 
@@ -275,7 +286,7 @@ fn cmd_rip(
                 meta.album_title.as_deref().unwrap_or("?"),
                 meta.album_artist
                     .as_deref()
-                    .map(|a| format!(" by {}" ,a))
+                    .map(|a| format!(" by {}", a))
                     .unwrap_or_default()
             ));
         } else {
@@ -323,7 +334,10 @@ fn cmd_rip(
                     sectors
                 ));
             }
-            HtoaStatus::HtoaDetected { sectors: _, duration_secs } => {
+            HtoaStatus::HtoaDetected {
+                sectors: _,
+                duration_secs,
+            } => {
                 spinner.finish_ok(format!(
                     "HTOA detected! {:.1}s of hidden audio - extracting...",
                     duration_secs
@@ -338,15 +352,12 @@ fn cmd_rip(
                         "   {} HTOA read returned empty (silent or driver issue)",
                         style(".").yellow()
                     ),
-                    Err(e) => println!(
-                        "   {} HTOA extraction failed: {}",
-                        style("⚠").yellow(), e
-                    ),
+                    Err(e) => println!("   {} HTOA extraction failed: {}", style("⚠").yellow(), e),
                 }
             }
         }
     }
-    
+
     if check_cdextra {
         let dev_path = device.unwrap_or("/dev/sr0");
         let spinner = Spinner::new("Scanning for CD-Extra data session...");
@@ -363,12 +374,16 @@ fn cmd_rip(
             }
             CdExtraStatus::CdExtraDetected { size_mib, .. } => {
                 spinner.finish_ok(format!(
-                    "CD-Extra detected ({:.1} MiB) - extracting ISO…",
+                    "CD-Extra detected ({:.1} MiB) - extracting ISO...",
                     size_mib
                 ));
                 if let Some(info) = probe_cdextra(dev_path, &toc) {
                     if let Some(ref label) = info.volume_label {
-                        println!("  {} Volume label: {}", style("·").cyan(), style(label).yellow());
+                        println!(
+                            "  {} Volume label: {}",
+                            style("·").cyan(),
+                            style(label).yellow()
+                        );
                     }
                     match extract_cdextra(dev_path, &info, &out) {
                         Ok(path) => println!(
@@ -376,10 +391,9 @@ fn cmd_rip(
                             style("✓").green().bold(),
                             style(path.display().to_string()).dim()
                         ),
-                        Err(e) => println!(
-                            "  {} CD-Extra extract failed: {}",
-                            style("⚠").yellow(), e
-                        ),
+                        Err(e) => {
+                            println!("  {} CD-Extra extract failed: {}", style("⚠").yellow(), e)
+                        }
                     }
                 }
             }
@@ -389,19 +403,15 @@ fn cmd_rip(
     if gen_cue {
         let mut meta = CueMetadata::empty(toc.track_count());
         if let Some(ref lm) = lookup_meta {
-            meta.album_title   = lm.album_title.clone();
-            meta.album_artist  = lm.album_artist.clone();
-            meta.track_titles  = lm.track_titles.clone();
+            meta.album_title = lm.album_title.clone();
+            meta.album_artist = lm.album_artist.clone();
+            meta.track_titles = lm.track_titles.clone();
             meta.track_artists = lm.track_artists.clone();
         } else if let Some(ref cd) = cd_text {
-            meta.album_title   = cd.album_title.clone();
-            meta.album_artist  = cd.album_artist.clone();
-            meta.track_titles  = cd.track_titles.iter()
-                .map(|t| t.clone())
-                .collect();
-            meta.track_artists = cd.track_artists.iter()
-                .map(|a| a.clone())
-                .collect();
+            meta.album_title = cd.album_title.clone();
+            meta.album_artist = cd.album_artist.clone();
+            meta.track_titles = cd.track_titles.iter().map(|t| t.clone()).collect();
+            meta.track_artists = cd.track_artists.iter().map(|a| a.clone()).collect();
         }
         match write_cue(&toc, format, &out, &meta) {
             Ok(path) => println!(
@@ -409,10 +419,7 @@ fn cmd_rip(
                 style("·").cyan(),
                 style(path.display().to_string()).dim()
             ),
-            Err(e) => println!(
-                "  {} CUE write failed: {}",
-                style("⚠").yellow(), e
-            ),
+            Err(e) => println!("  {} CUE write failed: {}", style("⚠").yellow(), e),
         }
     }
 
