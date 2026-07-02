@@ -17,6 +17,7 @@ path = "src/main.rs"
 [dependencies]
 cd-da-reader = "0.4"
 flac-codec = "1.3.2"
+mp3lame-encoder = { version = "0.2.4" }
 clap = { version = "4", features = ["derive", "color"] }
 indicatif = { version = "0.17", features = ["rayon"] }
 console = "0.16"
@@ -37,14 +38,6 @@ zbus = "5.16.0"
 
 ratatui = "0.30"
 crossterm = "0.29"
-
-[features]
-default = []
-mp3 = ["dep:mp3lame-encoder"]
-
-[dependencies.mp3lame-encoder]
-version = "0.2"
-optional = true
 
 [profile.release]
 opt-level = 3

@@ -46,10 +46,17 @@ cdrip rip
 # Rip to WAV
 cdrip rip --format wav
 
+# Rip to MP3
+cdrip rip --format mp3 --preset standard
+
 # Rip with ID lookups (musicbrainz, gnudb.org, itunes)
 cdrip rip --lookup
 cdrip rip --lookup --cue     # populates cue sheet
 cdrip rip --lookup --cd-text # wins over cd-text for cue fields
+
+# Scan if a CD has data sections (CD-Extra)
+cdrip rip --cdextra
+cdrip rip --cdextra --out ~/rips/
 
 # Generate cue sheets
 cdrip rip --cue

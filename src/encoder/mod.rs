@@ -2,8 +2,6 @@
 
 pub mod flac;
 pub mod wav;
-
-#[cfg(feature = "mp3")]
 pub mod mp3;
 
 use crate::error::Result;
@@ -13,7 +11,6 @@ use std::path::PathBuf;
 pub enum OutputFormat {
     Wav,
     Flac,
-    #[cfg(feature = "mp3")]
     Mp3,
 }
 
@@ -22,7 +19,6 @@ impl std::fmt::Display for OutputFormat {
         match self {
             OutputFormat::Wav  => write!(f, "WAV"),
             OutputFormat::Flac => write!(f, "FLAC"),
-            #[cfg(feature = "mp3")]
             OutputFormat::Mp3  => write!(f, "MP3"),
         }
     }
@@ -33,7 +29,6 @@ impl OutputFormat {
         match self {
             OutputFormat::Wav  => "wav",
             OutputFormat::Flac => "flac",
-            #[cfg(feature = "mp3")]
             OutputFormat::Mp3  => "mp3",
         }
     }
@@ -41,7 +36,6 @@ impl OutputFormat {
     pub fn is_lossy(&self) -> bool {
         match self {
             OutputFormat::Wav | OutputFormat::Flac => false,
-            #[cfg(feature = "mp3")]
             OutputFormat::Mp3 => true,
         }
     }
@@ -60,7 +54,6 @@ pub fn make_encoder(format: OutputFormat) -> Box<dyn Encoder> {
     match format {
         OutputFormat::Wav  => Box::new(wav::WavEncoder),
         OutputFormat::Flac => Box::new(flac::FlacEncoder::default()),
-        #[cfg(feature = "mp3")]
         OutputFormat::Mp3  => Box::new(mp3::Mp3Encoder::default()),
     }
 }

@@ -103,7 +103,7 @@ pub fn lookup(artist: &str, album: &str, config: &LookupConfig) -> LookupResult 
 /// iTunes keyword search works best with a combined "artist album" string.
 /// We strip common noise words that confuse the search engine.
 fn build_search_term(artist: &str, album: &str) -> String {
-    // Sanitize: remove parenthetical suffixes like "(Remastered)" or "[Deluxe]"
+    // Sanitize: removes parenthetical suffixes like "(Remastered)" or "[Deluxe]"
     let clean_album = album
         .split('(').next().unwrap_or(album)
         .split('[').next().unwrap_or(album)

@@ -179,7 +179,8 @@ impl App {
     pub fn toggle_format(&mut self) {
         self.format = match self.format {
             OutputFormat::Flac => OutputFormat::Wav,
-            OutputFormat::Wav => OutputFormat::Flac,
+            OutputFormat::Wav  => OutputFormat::Flac,
+            OutputFormat::Mp3  => OutputFormat::Mp3,
         };
     }
 

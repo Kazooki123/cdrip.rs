@@ -72,6 +72,7 @@ pub struct Mp3Id3 {
     pub title: String,
     pub artist: String,
     pub album: String,
+    pub album_art: String,
     pub year: String,
     pub comment: String,
 }
@@ -88,6 +89,7 @@ impl Default for Mp3Encoder {
 impl Encoder for Mp3Encoder {
     fn encode(&self, track_num: u8, pcm_data: &[u8], output_path: &PathBuf) -> Result<PathBuf> {
         let mut builder = Builder::new()
+            .ok_or("Error!")
             .map_err(|e| CdripError::FlacEncodeFailed(track_num, format!("LAME init: {}", e)))?;
 
         builder
@@ -102,21 +104,21 @@ impl Encoder for Mp3Encoder {
 
         match self.preset {
             Mp3Preset::Mobile => {
-                builder.set_vbr_mode(VbrMode::Vbr)
+                builder.set_vbr_mode(VbrMode::Abr)
                     .map_err(|e| CdripError::FlacEncodeFailed(track_num, e.to_string()))?;
-                builder.set_vbr_quality(6)
+                builder.set_vbr_quality(Quality::Decent)
                     .map_err(|e| CdripError::FlacEncodeFailed(track_num, e.to_string()))?;
             }
             Mp3Preset::Standard => {
-                builder.set_vbr_mode(VbrMode::Vbr)
+                builder.set_vbr_mode(VbrMode::Abr)
                     .map_err(|e| CdripError::FlacEncodeFailed(track_num, e.to_string()))?;
-                builder.set_vbr_quality(2)
+                builder.set_vbr_quality(Quality::Good)
                     .map_err(|e| CdripError::FlacEncodeFailed(track_num, e.to_string()))?;
             }
             Mp3Preset::Extreme => {
-                builder.set_vbr_mode(VbrMode::Vbr)
+                builder.set_vbr_mode(VbrMode::Abr)
                     .map_err(|e| CdripError::FlacEncodeFailed(track_num, e.to_string()))?;
-                builder.set_vbr_quality(0)
+                builder.set_vbr_quality(Quality::Best)
                     .map_err(|e| CdripError::FlacEncodeFailed(track_num, e.to_string()))?;
             }
             Mp3Preset::Cbr320 => {
@@ -127,11 +129,12 @@ impl Encoder for Mp3Encoder {
 
         if let Some(id3) = &self.id3 {
             builder.set_id3_tag(Id3Tag {
-                title:   id3.title.as_bytes(),
-                artist:  id3.artist.as_bytes(),
-                album:   id3.album.as_bytes(),
-                year:    id3.year.as_bytes(),
-                comment: id3.comment.as_bytes(),
+                title:     id3.title.as_bytes(),
+                artist:    id3.artist.as_bytes(),
+                album:     id3.album.as_bytes(),
+                album_art: &[],
+                year:      id3.year.as_bytes(),
+                comment:   id3.comment.as_bytes(),
             });
         }
 
@@ -143,12 +146,12 @@ impl Encoder for Mp3Encoder {
         // Raw CD PCM is interleaved: L0 R0 L1 R1 ... (2 bytes each = 4 bytes/frame).
         // LAME's `DualPcm` wants separate i16 slices for L and R.
         let frames = pcm_data.len() / 4;
-        let mut left  = Vec::<i16>::with_capacity(frames);
-        let mut right = Vec::<i16>::with_capacity(frames);
+        let mut left  = Vec::<u16>::with_capacity(frames);
+        let mut right = Vec::<u16>::with_capacity(frames);
 
         for chunk in pcm_data.chunks_exact(4) {
-            left.push( i16::from_le_bytes([chunk[0], chunk[1]]));
-            right.push(i16::from_le_bytes([chunk[2], chunk[3]]));
+            left.push( u16::from_le_bytes([chunk[0], chunk[1]]));
+            right.push(u16::from_le_bytes([chunk[2], chunk[3]]));
         }
 
         let input = DualPcm {
