@@ -1,5 +1,7 @@
 # CDRip.rs 🎵💽
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Kazooki123/cdrip.rs/build.yml?style=for-the-badge) ![GitHub License](https://img.shields.io/github/license/Kazooki123/cdrip.rs?style=for-the-badge)
+
 A fast, accurate CD ripper written in pure Rust. **No GNU dependencies**, no `cdparanoia` system library required.
 
 - **Demo**: Ripping a **Nirvana In Utero 2CD Deluxe Edition**
